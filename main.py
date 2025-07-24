@@ -8,7 +8,7 @@ def onAppStart(app):
     app.currentScreen = homePage(app)
 
 def redrawAll(app):
-    app.currentScreen.draw()
+    app.currentScreen.draw(app)
 
 def onMousePress(app, mouseX, mouseY):
     for button in app.currentScreen.buttons:
