@@ -5,6 +5,7 @@ def onAppStart(app):
     app.width = 1280
     app.height = 768
     app.tileSize = 64
+    app.tileHalf = 32
     app.currentScreen = homePage(app)
 
 def redrawAll(app):
