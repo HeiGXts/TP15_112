@@ -11,7 +11,6 @@ def redrawAll(app):
     app.currentScreen.draw(app)
 
 def onMousePress(app, mouseX, mouseY):
-    for button in app.currentScreen.buttons:
-        button.mousePress(mouseX, mouseY)
+    app.currentScreen.mousePress(app, mouseX, mouseY)
 
 runApp()
