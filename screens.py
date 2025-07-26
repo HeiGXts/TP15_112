@@ -3,6 +3,7 @@ from button import Button
 from map import *
 import copy
 import random
+import drawMap
 
 class homePage:
     def __init__(self, app):
@@ -57,24 +58,16 @@ class creditPage:
 
 class levelPage:
     def __init__(self, app):
+        self.lv = 0
         self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.back(app))
         self.level1 = Button(96, 96, app.tileSize, app.tileSize, 'images\startButton.png', lambda: self.toLevel(app, 1))
         self.buttons = [self.level1, self.backButton]
+        self.buildButtons = []
+        self.building = False
         self.map = copy.deepcopy(worldMap)
 
     def draw(self, app):
-        for i in range(len(self.map)):
-            for j in range(len(self.map[0])):
-                imageIndex = self.map[i][j]
-                imageX = app.tileHalf + j * app.tileSize
-                imageY = app.tileHalf + i * app.tileSize
-                if(type(imageIndex) == int):
-                    drawImage(images[imageIndex], imageX, imageY, width = app.tileSize, height = app.tileSize, align = 'center')
-                else:
-                    drawImage('images\pathTile.png', imageX, imageY, width = app.tileSize, height = app.tileSize, align = 'center')
-
-        for button in self.buttons:
-            button.draw()
+        drawMap.draw(self, app, self.lv)
 
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -89,32 +82,17 @@ class levelPage:
 class Level:
     levels = [level1, level2]
     def __init__(self, app, lv):
+        self.lv = lv
         self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.back(app))
         self.buttons = [self.backButton]
-        self.buildButton = []
+        self.buildButtons = []
         self.towers = {}
         self.map = copy.deepcopy(Level.levels[lv - 1])
         self.run = True
         self.building = False
 
     def draw(self, app):
-        for i in range(len(self.map)):
-            for j in range(len(self.map[0])):
-                imageIndex = self.map[i][j]
-                imageX = app.tileHalf + j * app.tileSize
-                imageY = app.tileHalf + i * app.tileSize
-                if(type(imageIndex) == int):
-                    drawImage(images[imageIndex], imageX, imageY, width = app.tileSize, height = app.tileSize, align = 'center')
-                else:
-                    drawImage('images\pathTile.png', imageX, imageY, width = app.tileSize, height = app.tileSize, align = 'center')
-
-        for button in self.buttons:
-            if(button.visible):
-                button.draw()
-
-        if(self.building):
-            for button in self.buildButton:
-                button.draw()
+        drawMap.draw(self, app, self.lv)
     
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -122,7 +100,7 @@ class Level:
                 button.mousePress(mouseX, mouseY)
 
         if(self.building):
-            for button in self.buildButton:
+            for button in self.buildButtons:
                 button.mousePress(mouseX, mouseY)
             self.building = False
         elif(app.tileSize < mouseX < app.width - app.tileSize and app.tileSize < mouseY < app.height - app.tileSize):
@@ -134,6 +112,8 @@ class Level:
                 self.build(app, row, col)
 
     def onStep(self, app):
+        if(self.run):
+            pass
         pass
 
     def back(self, app):
@@ -147,7 +127,7 @@ class Level:
                              r'images\backButton.png', lambda: self.buildTower(app, row, col, 1))
         self.towerC = Button((col + 1) * app.tileSize + app.tileHalf, row * app.tileSize + app.tileHalf, 50, 50, 
                              r'images\backButton.png', lambda: self.buildTower(app, row, col, 2))
-        self.buildButton = [self.towerA, self.towerB, self.towerC]
+        self.buildButtons = [self.towerA, self.towerB, self.towerC]
 
     def upgrade(self, app, row, col):
         self.building = True
