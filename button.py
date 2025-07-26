@@ -8,13 +8,13 @@ class Button:
         self.height = height
         self.image = image
         self.action = action
-        self.visible = True
+        self.locked = False
 
     def draw(self):
         drawImage(self.image, self.x, self.y, width = self.width, height = self.height, align = 'center')
 
     def mousePress(self, mouseX, mouseY):
         if(self.x - self.width // 2 <= mouseX <= self.x + self.width // 2 and 
-           self.y - self.height // 2 <= mouseY <= self.y + self.height // 2):
+           self.y - self.height // 2 <= mouseY <= self.y + self.height // 2 and not self.locked):
             self.action()
             return True

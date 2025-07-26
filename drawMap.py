@@ -12,13 +12,6 @@ def draw(self, app, lv):
         
         row, col = start[lv]
         drawPath(self, app, (0, 0), self.map[row][col], (row, col))
-
-        for button in self.buttons:
-            button.draw()
-
-        if(self.building):
-            for button in self.buildButtons:
-                button.draw()
     
 def drawPath(self, app, ldir, ndir, co):
     lrow, lcol = ldir
