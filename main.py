@@ -10,6 +10,8 @@ def onAppStart(app):
     app.currentScreen = homePage(app)
     app.stepsPerSecond = 60
     app.hp = 20
+    app.levelComplete = [False, False]
+    app.totalMoney = 0
 
 def redrawAll(app):
     app.currentScreen.draw(app)

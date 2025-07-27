@@ -2,6 +2,7 @@ from cmu_graphics import *
 from button import Button
 from map import *
 from tower import *
+from unit import *
 import copy
 import random
 import drawMap
@@ -91,7 +92,8 @@ class Level:
     def __init__(self, app, lv):
         self.lv = lv
         self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.back(app))
-        self.buttons = [self.backButton]
+        self.nextWave = Button(app.width - app.tileHalf, app.height - app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.callWave(app))
+        self.buttons = [self.backButton, self.nextWave]
         self.buildButtons = []
         self.towers = {}
         self.map = copy.deepcopy(Level.levels[lv - 1])
@@ -100,10 +102,19 @@ class Level:
         self.m = money[lv - 1]
         self.hp = app.hp
         self.rangeStat = [False]
+        self.waves = copy.deepcopy(enemyWave[lv - 1])
+        self.thisWave = [0, 0, 0]
+        self.enemyLoc = []
+        self.count = 0
+        self.enemies = []
+        self.waveComplete = True
 
     def draw(self, app):
         drawMap.draw(self, app, self.lv)
         self.drawRange(self.rangeStat)
+
+        for i in range(len(self.enemies) - 1, -1, -1):
+            self.enemies[i].draw(app)
 
         for co in self.towers:
             self.towers[co].draw(app)
@@ -116,6 +127,7 @@ class Level:
                 button.draw()
 
         drawLabel(str(self.m), app.width - app.tileSize, app.tileHalf, fill = 'white', size = 24, font = app.ithacaFont, bold = True, align = 'right')
+        drawLabel(str(self.hp), 2 * app.tileSize, app.tileHalf, fill = 'white', size = 24, font = app.ithacaFont, bold = True, align = 'left')
     
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -138,8 +150,30 @@ class Level:
 
     def onStep(self, app):
         if(self.run):
-            pass
-        pass
+            if(self.thisWave != [0, 0, 0]):
+                self.count = (self.count + 1) % 60
+                if(self.count == 0):
+                    if(self.thisWave[0] > 0):
+                        self.enemies.append(Enemy(app, self.map, start[self.lv], 0))
+                        self.thisWave[0] -= 1
+                    elif(self.thisWave[1 > 0]):
+                        self.enemies.append(Enemy(app, self.map, start[self.lv], 1))
+                        self.thisWave[1] -= 1
+                    else:
+                        self.enemies.append(Enemy(app, self.map, start[self.lv], 2))
+                        self.thisWave[2] -= 1
+            i = 0
+            while i < len(self.enemies):
+                self.enemies[i].onStep(app)
+                self.enemyLoc[i] = (self.enemies[i].x, self.enemies[i].y)
+                if(self.map[abs(self.enemyLoc[i][1] - app.tileHalf) // app.tileSize][abs(self.enemyLoc[i][0] - app.tileHalf) // app.tileSize] == (0, 0)):
+                    self.hp -= self.enemies[i].attack()
+                    self.enemies.pop(i)
+                    self.enemyLoc.pop(i)
+                    if(self.hp <= 0):
+                        app.currentScreen = settlePage(app, False, self.lv)
+                else:
+                    i += 1
 
     def back(self, app):
         app.currentScreen = levelPage(app)
@@ -182,3 +216,20 @@ class Level:
     def drawRange(self, rangeStat):
         if(rangeStat[0]):
             drawCircle(rangeStat[1], rangeStat[2], rangeStat[3], fill = 'gray', opacity = 50)
+
+    def callWave(self, app):
+        if(self.waveComplete):
+            if(self.waves == []):
+                app.levelComplete[self.lv - 1] = True
+                app.totalMoney += reward[self.lv - 1]
+                app.currentScreen = settlePage(app, True, self.lv)
+            else:
+                self.thisWave = self.waves.pop(0)
+                self.enemyLoc = [0] * sum(self.thisWave)
+
+class settlePage:
+    def __init__(self, app, victory, lv):
+        pass
+
+    def draw(self, app):
+        pass
