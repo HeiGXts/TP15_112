@@ -4,14 +4,15 @@ from map import *
 #left, right, up, down, dead
 enemyImage = [
     ['images\enemyUnitL1.png', 'images\enemyUnitR1.png', 'images\enemyUnitU1.png', 'images\enemyUnitD1.png', 'images\enemyUnit1Dead.png'],
-    []
+    ['images\enemyUnitL1.png', 'images\enemyUnitR1.png', 'images\enemyUnitU1.png', 'images\enemyUnitD1.png', 'images\enemyUnit1Dead.png'],
+    ['images\enemyUnitL1.png', 'images\enemyUnitR1.png', 'images\enemyUnitU1.png', 'images\enemyUnitD1.png', 'images\enemyUnit1Dead.png']
 ]
 
-#image, damage, hp, speed(pixel per 10 steps), worth, size
+#image, damage, hp, speed(pixel per 5 steps), worth, size
 enemyStat = [
-    [enemyImage[0], 1, 30, 8, 10, 0.5],
-    [],
-    []
+    [enemyImage[0], 1, 30, 4, 10, 0.5],
+    [enemyImage[1], 2, 35, 16, 20, 0.75],
+    [enemyImage[2], 5, 120, 2, 50, 1]
 ]
 
 class Enemy:
@@ -38,7 +39,7 @@ class Enemy:
                     self.rotateAngle += self.rotateSign
                     if(abs(self.rotateAngle) == 10):
                         self.rotateSign *= -1
-            if(self.count == 9):
+            if(self.count % 5 == 0):
                 dy, dx = self.direction
                 dy = dy * self.stat[3]
                 dx = dx * self.stat[3]
@@ -65,6 +66,9 @@ class Enemy:
         else:
             img = self.stat[0][0]
         drawImage(img, self.x, self.y, width = self.size, height = self.size, rotateAngle = self.rotateAngle, align = 'center')
+        if(not self.dead):
+            drawRect(self.x, self.y - self.size // 2 - 5, 25, 2, fill = 'gray', align = 'center')
+            drawRect(self.x - 13, self.y - self.size // 2 - 5, int((self.hp / self.stat[2]) * 25), 2, fill = 'red', align = 'left')
 
     def attack(self):
         return self.stat[1]

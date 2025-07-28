@@ -114,7 +114,12 @@ class Level:
         self.drawRange(self.rangeStat)
 
         for i in range(len(self.enemies) - 1, -1, -1):
-            self.enemies[i].draw(app)
+            if(self.enemies[i].dead):
+                self.enemies[i].draw(app)
+        
+        for i in range(len(self.enemies) - 1, -1, -1):
+            if(not self.enemies[i].dead):
+                self.enemies[i].draw(app)
 
         for co in self.towers:
             self.towers[co].draw(app)
@@ -150,9 +155,9 @@ class Level:
 
     def onStep(self, app):
         if(self.run):
+            self.count = (self.count + 1) % (app.stepsPerSecond * 5)
             if(self.thisWave != [0, 0, 0]):
-                self.count = (self.count + 1) % 60
-                if(self.count == 0):
+                if(self.count % 60 == 0):
                     if(self.thisWave[0] > 0):
                         self.enemies.append(Enemy(app, self.map, start[self.lv], 0))
                         self.thisWave[0] -= 1
@@ -162,10 +167,13 @@ class Level:
                     else:
                         self.enemies.append(Enemy(app, self.map, start[self.lv], 2))
                         self.thisWave[2] -= 1
+            
             i = 0
+            self.waveComplete = True
             while i < len(self.enemies):
                 self.enemies[i].onStep(app)
                 self.enemyLoc[i] = (self.enemies[i].x, self.enemies[i].y)
+                self.waveComplete = self.waveComplete and self.enemies[i].dead
                 if(self.map[abs(self.enemyLoc[i][1] - app.tileHalf) // app.tileSize][abs(self.enemyLoc[i][0] - app.tileHalf) // app.tileSize] == (0, 0)):
                     self.hp -= self.enemies[i].attack()
                     self.enemies.pop(i)
@@ -174,6 +182,23 @@ class Level:
                         app.currentScreen = settlePage(app, False, self.lv)
                 else:
                     i += 1
+
+            if(not self.waveComplete and self.count % 60 == 0):
+                self.m += 1
+
+            for tower in self.towers:
+                targetNum = 0
+                thisStat = self.towers[tower].stat
+                for i in range (len(self.enemyLoc)):
+                    if(self.enemyLoc[i] == 0 or targetNum == thisStat[5]):
+                        break
+                    towerY = app.tileSize * tower[0] + app.tileHalf
+                    towerX = app.tileSize * tower[1] + app.tileHalf
+                    if(self.getRange((towerX, towerY), self.enemyLoc[i], thisStat[3]) and self.count % thisStat[2] == 0 and not self.enemies[i].dead):
+                        self.enemies[i].takeDamage(app, thisStat[1])
+                        targetNum += 1
+                        if(self.enemies[i].dead):
+                            self.m += self.enemies[i].stat[4]
 
     def back(self, app):
         app.currentScreen = levelPage(app)
@@ -224,8 +249,12 @@ class Level:
                 app.totalMoney += reward[self.lv - 1]
                 app.currentScreen = settlePage(app, True, self.lv)
             else:
+                self.enemies = []
                 self.thisWave = self.waves.pop(0)
                 self.enemyLoc = [0] * sum(self.thisWave)
+
+    def getRange(self, co1, co2, range):
+        return abs(co1[0] - co2[0]) ** 2 + abs(co1[1] - co2[1]) ** 2 <= range ** 2
 
 class settlePage:
     def __init__(self, app, victory, lv):
