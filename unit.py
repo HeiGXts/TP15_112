@@ -10,9 +10,9 @@ enemyImage = [
 
 #image, damage, hp, speed(pixel per 5 steps), worth, size
 enemyStat = [
-    [enemyImage[0], 1, 30, 4, 10, 0.5],
-    [enemyImage[1], 2, 35, 16, 20, 0.75],
-    [enemyImage[2], 5, 120, 2, 50, 1]
+    [enemyImage[0], 1, 35, 4, 5, 0.5],
+    [enemyImage[1], 2, 40, 16, 20, 0.75],
+    [enemyImage[2], 5, 150, 2, 50, 1]
 ]
 
 class Enemy:
@@ -68,7 +68,7 @@ class Enemy:
         drawImage(img, self.x, self.y, width = self.size, height = self.size, rotateAngle = self.rotateAngle, align = 'center')
         if(not self.dead):
             drawRect(self.x, self.y - self.size // 2 - 5, 25, 2, fill = 'gray', align = 'center')
-            drawRect(self.x - 13, self.y - self.size // 2 - 5, int((self.hp / self.stat[2]) * 25), 2, fill = 'red', align = 'left')
+            drawRect(self.x - 13, self.y - self.size // 2 - 5, max(int((self.hp / self.stat[2]) * 25), 1), 2, fill = 'red', align = 'left')
 
     def attack(self):
         return self.stat[1]

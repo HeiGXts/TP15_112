@@ -66,7 +66,7 @@ class levelPage:
     def __init__(self, app):
         self.lv = 0
         self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.back(app))
-        self.level1 = Button(96, 96, app.tileSize, app.tileSize, 'images\startButton.png', lambda: self.toLevel(app, 1))
+        self.level1 = Button(96, 96, app.tileSize, app.tileSize, 'images\levelFlag.png', lambda: self.toLevel(app, 1))
         self.buttons = [self.level1, self.backButton]
         self.map = copy.deepcopy(worldMap)
 
@@ -91,9 +91,12 @@ class Level:
     levels = [level1, level2]
     def __init__(self, app, lv):
         self.lv = lv
-        self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.back(app))
-        self.nextWave = Button(app.width - app.tileHalf, app.height - app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.callWave(app))
-        self.buttons = [self.backButton, self.nextWave]
+        self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, 'images\\backButton.png', lambda: self.back(app))
+        self.nextWaveButton = Button(app.width - app.tileHalf, app.height - app.tileHalf, 50, 50, 'images\\nextWaveButton.png', lambda: self.callWave(app))
+        self.pauseButton = Button(app.tileSize + app.tileHalf, app.tileHalf, 50, 50, 'images\\pauseButton.png', lambda: self.pause())
+        self.unpauseButton = Button(app.tileSize + app.tileHalf, app.tileHalf, 50, 50, 'images\\unpauseButton.png', lambda: self.pause())
+        self.restartButton = Button(app.tileHalf, app.height - app.tileHalf, 50, 50, 'images\\restartButton.png', lambda: self.restart(app))
+        self.buttons = [self.backButton, self.nextWaveButton, self.pauseButton, self.restartButton]
         self.buildButtons = []
         self.towers = {}
         self.map = copy.deepcopy(Level.levels[lv - 1])
@@ -113,7 +116,7 @@ class Level:
         drawMap.draw(self, app, self.lv)
         self.drawRange(self.rangeStat)
 
-        for i in range(len(self.enemies) - 1, -1, -1):
+        for i in range(len(self.enemies)):
             if(self.enemies[i].dead):
                 self.enemies[i].draw(app)
         
@@ -132,7 +135,7 @@ class Level:
                 button.draw()
 
         drawLabel(str(self.m), app.width - app.tileSize, app.tileHalf, fill = 'white', size = 24, font = app.ithacaFont, bold = True, align = 'right')
-        drawLabel(str(self.hp), 2 * app.tileSize, app.tileHalf, fill = 'white', size = 24, font = app.ithacaFont, bold = True, align = 'left')
+        drawLabel(str(self.hp), 3 * app.tileSize, app.tileHalf, fill = 'white', size = 24, font = app.ithacaFont, bold = True, align = 'left')
     
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -153,11 +156,17 @@ class Level:
             elif(type(self.map[row][col]) == int and self.map[row][col] < 2):
                 self.build(app, row, col)
 
+    def keyPress(self, app, key):
+        if(key == 'space'):
+            self.pause()
+        if(key == 'r'):
+            self.restart(app)
+
     def onStep(self, app):
         if(self.run):
             self.count = (self.count + 1) % (app.stepsPerSecond * 5)
             if(self.thisWave != [0, 0, 0]):
-                if(self.count % 60 == 0):
+                if(self.count % enemySpawnRate[self.lv - 1][len(enemyWave[self.lv - 1]) - len(self.waves) - 1] == 0):
                     if(self.thisWave[0] > 0):
                         self.enemies.append(Enemy(app, self.map, start[self.lv], 0))
                         self.thisWave[0] -= 1
@@ -189,12 +198,20 @@ class Level:
             for tower in self.towers:
                 targetNum = 0
                 thisStat = self.towers[tower].stat
-                for i in range (len(self.enemyLoc)):
+                for i in range(len(self.enemyLoc)):
                     if(self.enemyLoc[i] == 0 or targetNum == thisStat[5]):
                         break
                     towerY = app.tileSize * tower[0] + app.tileHalf
                     towerX = app.tileSize * tower[1] + app.tileHalf
                     if(self.getRange((towerX, towerY), self.enemyLoc[i], thisStat[3]) and self.count % thisStat[2] == 0 and not self.enemies[i].dead):
+                        if(thisStat[6]):
+                            for j in range(len(self.enemyLoc)):
+                                if(j == i or self.enemyLoc[j] == 0):
+                                    continue
+                                if(self.getRange(self.enemyLoc[i], self.enemyLoc[j], thisStat[7]) and not self.enemies[j].dead):
+                                    self.enemies[j].takeDamage(app, thisStat[1])
+                                    if(self.enemies[j].dead):
+                                        self.m += self.enemies[j].stat[4]
                         self.enemies[i].takeDamage(app, thisStat[1])
                         targetNum += 1
                         if(self.enemies[i].dead):
@@ -206,11 +223,11 @@ class Level:
     def build(self, app, row, col):
         self.building = True
         self.tower0 = Button((col - 1) * app.tileSize + app.tileHalf, row * app.tileSize + app.tileHalf, 50, 50, 
-                             r'images\backButton.png', lambda: self.buildTower(app, row, col, 0))
+                             towerButtonImages[0], lambda: self.buildTower(app, row, col, 0))
         self.tower3 = Button(col * app.tileSize + app.tileHalf, (row - 1) * app.tileSize + app.tileHalf, 50, 50, 
-                             r'images\backButton.png', lambda: self.buildTower(app, row, col, 3))
+                             towerButtonImages[3], lambda: self.buildTower(app, row, col, 3))
         self.tower6 = Button((col + 1) * app.tileSize + app.tileHalf, row * app.tileSize + app.tileHalf, 50, 50, 
-                             r'images\backButton.png', lambda: self.buildTower(app, row, col, 6))
+                             towerButtonImages[6], lambda: self.buildTower(app, row, col, 6))
         self.buildButtons = [self.tower0, self.tower3, self.tower6]
 
     def upgrade(self, app, row, col, type):
@@ -221,8 +238,8 @@ class Level:
         self.buildButtons = [self.sell]
         self.rangeStat = [True, x, y, towerStat[type][3]]
         if(type % 3 == 0):
-            self.towerUpgrade1 = Button(x - app.tileSize, y, 50, 50, r'images\backButton.png', lambda: self.buildTower(app, row, col, type + 1))
-            self.towerUpgrade2 = Button(x + app.tileSize, y, 50, 50, r'images\backButton.png', lambda: self.buildTower(app, row, col, type + 2))
+            self.towerUpgrade1 = Button(x - app.tileSize, y, 50, 50, towerButtonImages[type + 1], lambda: self.buildTower(app, row, col, type + 1))
+            self.towerUpgrade2 = Button(x + app.tileSize, y, 50, 50, towerButtonImages[type + 2], lambda: self.buildTower(app, row, col, type + 2))
             self.buildButtons.extend([self.towerUpgrade1, self.towerUpgrade2])
 
     def buildTower(self, app, row, col, type):
@@ -245,8 +262,11 @@ class Level:
     def callWave(self, app):
         if(self.waveComplete):
             if(self.waves == []):
-                app.levelComplete[self.lv - 1] = True
-                app.totalMoney += reward[self.lv - 1]
+                if(app.levelComplete[self.lv - 1]):
+                    app.totalMoney += reward[self.lv - 1][1]
+                else:
+                    app.levelComplete[self.lv - 1] = True
+                    app.totalMoney += reward[self.lv - 1][0]
                 app.currentScreen = settlePage(app, True, self.lv)
             else:
                 self.enemies = []
@@ -255,6 +275,17 @@ class Level:
 
     def getRange(self, co1, co2, range):
         return abs(co1[0] - co2[0]) ** 2 + abs(co1[1] - co2[1]) ** 2 <= range ** 2
+    
+    def pause(self):
+        if(self.run):
+            self.run = False
+            self.buttons[2] = self.unpauseButton
+        else:
+            self.run = True
+            self.buttons[2] = self.pauseButton
+
+    def restart(self, app):
+        app.currentScreen = Level(app, self.lv)
 
 class settlePage:
     def __init__(self, app, victory, lv):

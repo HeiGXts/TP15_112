@@ -19,6 +19,10 @@ def redrawAll(app):
 def onMousePress(app, mouseX, mouseY):
     app.currentScreen.mousePress(app, mouseX, mouseY)
 
+def onKeyPress(app, key):
+    if(isinstance(app.currentScreen, Level)):
+        app.currentScreen.keyPress(app, key)
+
 def onStep(app):
     if(isinstance(app.currentScreen, Level)):
         app.currentScreen.onStep(app)
