@@ -6,7 +6,6 @@ def onAppStart(app):
     app.height = 768
     app.tileSize = 64
     app.tileHalf = 32
-    app.ithacaFont = 'font\ithaca-font\Ithaca-LVB75.ttf'
     app.currentScreen = homePage(app)
     app.stepsPerSecond = 60
     app.hp = 20
@@ -26,5 +25,7 @@ def onKeyPress(app, key):
 def onStep(app):
     if(isinstance(app.currentScreen, Level)):
         app.currentScreen.onStep(app)
+
+# 'ithaca', 'font\ithaca-font\Ithaca-LVB75.ttf'
 
 runApp()

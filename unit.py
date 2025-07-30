@@ -5,7 +5,7 @@ from map import *
 enemyImage = [
     ['images\enemyUnitL1.png', 'images\enemyUnitR1.png', 'images\enemyUnitU1.png', 'images\enemyUnitD1.png', 'images\enemyUnit1Dead.png'],
     ['images\enemyUnitL1.png', 'images\enemyUnitR1.png', 'images\enemyUnitU1.png', 'images\enemyUnitD1.png', 'images\enemyUnit1Dead.png'],
-    ['images\enemyUnitL1.png', 'images\enemyUnitR1.png', 'images\enemyUnitU1.png', 'images\enemyUnitD1.png', 'images\enemyUnit1Dead.png']
+    ['images\enemyUnitL3.png', 'images\enemyUnitR3.png', 'images\enemyUnitU3.png', 'images\enemyUnitD3.png', 'images\enemyUnit3Dead.png']
 ]
 
 #image, damage, hp, speed(pixel per 5 steps), worth, size
@@ -14,6 +14,9 @@ enemyStat = [
     [enemyImage[1], 2, 40, 16, 20, 0.75],
     [enemyImage[2], 5, 150, 2, 50, 1]
 ]
+
+#Inspiration from:
+#https://jimhatama.itch.io/german-ww2-pixel-tanks
 
 class Enemy:
     def __init__(self, app, map, start, type):

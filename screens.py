@@ -7,23 +7,37 @@ import copy
 import random
 import drawMap
 
+#Background Images:
+#https://stock.adobe.com/search?k=pixel+art+background&asset_id=726960402
+#https://stock.adobe.com/search?k=pixel+art+background&asset_id=760560007
+#https://www.shutterstock.com/image-vector/pixel-art-game-level-background-8-2303999851
+#https://www.shutterstock.com/image-vector/pixel-art-game-level-background-space-2553891639
+
+backgroundImages = ['images\\background1.png', 'images\\background2.png', 'images\\background3.png', 'images\\background4.png']
 
 class homePage:
     def __init__(self, app):
         self.startButton = Button(app.width // 2, app.height * 0.6, 200, 80, 'images\startButton.png', lambda: self.toLevel())
-        self.settingButton = Button(app.width // 2, app.height * 0.72, 150, 60, 'images\startButton.png', lambda: self.toSetting())
+        self.settingButton = Button(app.tileHalf, app.tileHalf, 50, 50, 'images\settingButton.png', lambda: self.toSetting())
+        self.creditButton = Button(app.width // 2, app.height * 0.72, 150, 60, 'images\startButton.png', lambda: self.toCredit())
         self.quitButton = Button(app.width // 2, app.height * 0.82, 150, 60, 'images\quitButton.png', lambda: app.quit())
-        self.buttons = [self.startButton, self.settingButton, self.quitButton]
+        self.buttons = [self.startButton, self.settingButton, self.creditButton, self.quitButton]
+        self.backgroundImage = backgroundImages[random.randint(0, 3)]
 
     def draw(self, app):
+        drawImage(self.backgroundImage, 0, 0, width = app.width, height = app.height)
         for button in self.buttons:
             button.draw()
+        drawImage('images\\title.png', app.width // 2, app.height * 0.35, width = 500, height = 250, align = 'center')
 
     def toLevel(self):
         app.currentScreen = levelPage(app)
 
     def toSetting(self):
         app.currentScreen = settingPage(app)
+
+    def toCredit(self):
+        app.currentScreen = creditPage(app)
 
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -34,9 +48,12 @@ class settingPage:
     def __init__(self, app):
         self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.back(app))
         self.buttons = [self.backButton]
+        self.backgroundImage = backgroundImages[random.randint(0, 3)]
 
     def draw(self, app):
-        pass
+        drawImage(self.backgroundImage, 0, 0, width = app.width, height = app.height)
+        for button in self.buttons:
+            button.draw()
 
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -50,9 +67,12 @@ class creditPage:
     def __init__(self, app):
         self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.back(app))
         self.buttons = [self.backButton]
+        self.backgroundImage = backgroundImages[random.randint(0, 3)]
 
     def draw(self, app):
-        pass
+        drawImage(self.backgroundImage, 0, 0, width = app.width, height = app.height)
+        for button in self.buttons:
+            button.draw()
 
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -134,8 +154,15 @@ class Level:
             for button in self.buildButtons:
                 button.draw()
 
-        drawLabel(str(self.m), app.width - app.tileSize, app.tileHalf, fill = 'white', size = 24, font = app.ithacaFont, bold = True, align = 'right')
-        drawLabel(str(self.hp), 3 * app.tileSize, app.tileHalf, fill = 'white', size = 24, font = app.ithacaFont, bold = True, align = 'left')
+        drawLabel(str(self.m), app.width - app.tileSize, app.tileHalf, fill = 'white', size = 24, font = 'ithaca', bold = True, align = 'right')
+        drawImage('images\silverCoin.png', app.width - app.tileHalf, app.tileHalf, align = 'center')
+        drawLabel(str(self.hp), 3 * app.tileSize, app.tileHalf, fill = 'white', size = 24, font = 'ithaca', bold = True, align = 'left')
+        if(self.hp / app.hp >= 0.67):
+            drawImage('images\hp100.png', 2 * app.tileSize + app.tileHalf, app.tileHalf, align = 'center')
+        elif(self.hp / app.hp >= 0.33):
+            drawImage('images\hp70.png', 2 * app.tileSize + app.tileHalf, app.tileHalf, align = 'center')
+        else:
+            drawImage('images\hp30.png', 2 * app.tileSize + app.tileHalf, app.tileHalf, align = 'center')
     
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
