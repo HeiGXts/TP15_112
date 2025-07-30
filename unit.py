@@ -11,7 +11,7 @@ enemyImage = [
 #image, damage, hp, speed(pixel per 5 steps), worth, size
 enemyStat = [
     [enemyImage[0], 1, 35, 4, 5, 0.5],
-    [enemyImage[1], 2, 40, 16, 20, 0.75],
+    [enemyImage[1], 2, 40, 8, 20, 0.75],
     [enemyImage[2], 5, 150, 2, 50, 1]
 ]
 

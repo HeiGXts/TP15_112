@@ -12,7 +12,7 @@
 #https://kevins-moms-house.itch.io/fantasy
 
 images = ['images\grassTile1.png', 'images\grassTile2.png', 'images\\treeTile1.png', 'images\\treeTile2.png', 'images\\treeTile3.png',
-          'images\\bushTile.png'
+          'images\\bushTile.png', 'images\\rockTile.png'
           ]
 
 u = (-1, 0)

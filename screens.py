@@ -96,6 +96,9 @@ class levelPage:
         for button in self.buttons:
             button.draw()
 
+        drawLabel(str(app.totalMoney), app.width - app.tileSize, app.tileHalf, fill = 'white', size = 24, font = 'ithaca', bold = True, align = 'right')
+        drawImage('images\goldCoin.png', app.width - app.tileHalf, app.tileHalf, align = 'center')
+
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
             button.mousePress(mouseX, mouseY)
@@ -116,8 +119,11 @@ class Level:
         self.pauseButton = Button(app.tileSize + app.tileHalf, app.tileHalf, 50, 50, 'images\\pauseButton.png', lambda: self.pause())
         self.unpauseButton = Button(app.tileSize + app.tileHalf, app.tileHalf, 50, 50, 'images\\unpauseButton.png', lambda: self.pause())
         self.restartButton = Button(app.tileHalf, app.height - app.tileHalf, 50, 50, 'images\\restartButton.png', lambda: self.restart(app))
-        self.buttons = [self.backButton, self.nextWaveButton, self.pauseButton, self.restartButton]
+        self.changeSpeedButton = Button(2 * app.tileSize + app.tileHalf, app.tileHalf, 50, 50, 'images\\changeSpeedButton.png', lambda: self.changeSpeed(app))
+        self.buttons = [self.backButton, self.nextWaveButton, self.pauseButton, self.restartButton, self.changeSpeedButton]
         self.buildButtons = []
+        self.buildCosts = []
+        self.explosions = []
         self.towers = {}
         self.map = copy.deepcopy(Level.levels[lv - 1])
         self.run = True
@@ -147,22 +153,29 @@ class Level:
         for co in self.towers:
             self.towers[co].draw(app)
 
+        for explosion in self.explosions:
+            drawImage(explosionImages[explosion[2]], explosion[0][0], explosion[0][1], width = app.tileSize * explosion[1] // 32, height = app.tileSize * explosion[1] // 32, align = 'center')
+
         for button in self.buttons:
             button.draw()
 
         if(self.building):
             for button in self.buildButtons:
                 button.draw()
+            drawLabel(self.buildCosts[0][0], self.buildCosts[0][1], self.buildCosts[0][2], align = 'center')
+            drawLabel(self.buildCosts[1][0], self.buildCosts[1][1], self.buildCosts[1][2], align = 'center')
+            if(len(self.buildCosts) > 2):
+                drawLabel(self.buildCosts[2][0], self.buildCosts[2][1], self.buildCosts[2][2], align = 'center')
 
         drawLabel(str(self.m), app.width - app.tileSize, app.tileHalf, fill = 'white', size = 24, font = 'ithaca', bold = True, align = 'right')
         drawImage('images\silverCoin.png', app.width - app.tileHalf, app.tileHalf, align = 'center')
-        drawLabel(str(self.hp), 3 * app.tileSize, app.tileHalf, fill = 'white', size = 24, font = 'ithaca', bold = True, align = 'left')
+        drawLabel(str(self.hp), 4 * app.tileSize, app.tileHalf, fill = 'white', size = 24, font = 'ithaca', bold = True, align = 'left')
         if(self.hp / app.hp >= 0.67):
-            drawImage('images\hp100.png', 2 * app.tileSize + app.tileHalf, app.tileHalf, align = 'center')
+            drawImage('images/hp100.png', 3 * app.tileSize + app.tileHalf, app.tileHalf, align = 'center')
         elif(self.hp / app.hp >= 0.33):
-            drawImage('images\hp70.png', 2 * app.tileSize + app.tileHalf, app.tileHalf, align = 'center')
+            drawImage('images/hp70.png', 3 * app.tileSize + app.tileHalf, app.tileHalf, align = 'center')
         else:
-            drawImage('images\hp30.png', 2 * app.tileSize + app.tileHalf, app.tileHalf, align = 'center')
+            drawImage('images/hp30.png', 3 * app.tileSize + app.tileHalf, app.tileHalf, align = 'center')
     
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -219,8 +232,18 @@ class Level:
                 else:
                     i += 1
 
-            if(not self.waveComplete and self.count % 60 == 0):
+            if(not self.waveComplete and self.count % 90 == 0):
                 self.m += 1
+
+            j = 0
+            while j < len(self.explosions):
+                self.explosions[j][3] = (self.explosions[j][3] + 1) % 6
+                if(self.explosions[j][3] == 5):
+                    if(self.explosions[j][2] == 4):
+                        self.explosions.pop(j)
+                        continue
+                    self.explosions[j][2] += 1
+                j += 1
 
             for tower in self.towers:
                 targetNum = 0
@@ -232,6 +255,7 @@ class Level:
                     towerX = app.tileSize * tower[1] + app.tileHalf
                     if(self.getRange((towerX, towerY), self.enemyLoc[i], thisStat[3]) and self.count % thisStat[2] == 0 and not self.enemies[i].dead):
                         if(thisStat[6]):
+                            self.explosions.append([self.enemyLoc[i], thisStat[7], 0, 0])
                             for j in range(len(self.enemyLoc)):
                                 if(j == i or self.enemyLoc[j] == 0):
                                     continue
@@ -256,6 +280,9 @@ class Level:
         self.tower6 = Button((col + 1) * app.tileSize + app.tileHalf, row * app.tileSize + app.tileHalf, 50, 50, 
                              towerButtonImages[6], lambda: self.buildTower(app, row, col, 6))
         self.buildButtons = [self.tower0, self.tower3, self.tower6]
+        self.buildCosts = [[towerStat[0][4], (col - 1) * app.tileSize + app.tileHalf, (row + 1) * app.tileSize],
+                           [towerStat[3][4], col * app.tileSize + app.tileHalf, row * app.tileSize],
+                           [towerStat[6][4], (col + 1) * app.tileSize + app.tileHalf, (row + 1) * app.tileSize]]
 
     def upgrade(self, app, row, col, type):
         self.building = True
@@ -268,6 +295,8 @@ class Level:
             self.towerUpgrade1 = Button(x - app.tileSize, y, 50, 50, towerButtonImages[type + 1], lambda: self.buildTower(app, row, col, type + 1))
             self.towerUpgrade2 = Button(x + app.tileSize, y, 50, 50, towerButtonImages[type + 2], lambda: self.buildTower(app, row, col, type + 2))
             self.buildButtons.extend([self.towerUpgrade1, self.towerUpgrade2])
+            self.buildCosts = [[towerStat[type + 1][4], (col - 1) * app.tileSize + app.tileHalf, (row + 1) * app.tileSize],
+                                [towerStat[type + 2][4], (col + 1) * app.tileSize + app.tileHalf, (row + 1) * app.tileSize]]
 
     def buildTower(self, app, row, col, type):
         cost = towerStat[type][4]
@@ -313,6 +342,12 @@ class Level:
 
     def restart(self, app):
         app.currentScreen = Level(app, self.lv)
+
+    def changeSpeed(self, app):
+        if(app.stepsPerSecond == 60):
+            app.stepsPerSecond = 30
+        else:
+            app.stepsPerSecond = 60
 
 class settlePage:
     def __init__(self, app, victory, lv):
