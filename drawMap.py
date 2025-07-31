@@ -32,5 +32,9 @@ def drawPath(self, app, ldir, ndir, co):
         img += 'DL.png'
     drawImage(img, col * app.tileSize + app.tileHalf, row * app.tileSize + app.tileHalf, width = app.tileSize, height = app.tileSize, align = 'center')
     row, col = row + nrow, col + ncol
-    if(ndir != (0, 0)):
+    if(ndir == (0, 0)):
+        if(self.lv != 0):
+            drawImage('images/levelFlag.png', col * app.tileSize + app.tileHalf, row * app.tileSize + app.tileHalf, 
+                      width = app.tileSize, height = app.tileSize, align = 'center')
+    else:
         drawPath(self, app, ndir, self.map[row][col], (row, col))

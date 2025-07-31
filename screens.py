@@ -49,8 +49,9 @@ class settingPage:
         self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, 'images/backButton.png', lambda: self.back(app))
         self.difficultyButton = Button(app.width // 2, 7 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeDifficulty(app))
         self.FPSButton = Button(app.width // 2, 9 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeFPS(app))
-        self.ScreenSizeButton = Button(app.width // 2, 11 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeScreenSize(app))
-        self.buttons = [self.backButton, self.difficultyButton, self.FPSButton, self.ScreenSizeButton]
+        self.screenSizeButton = Button(app.width // 2, 11 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeScreenSize(app))
+        self.unlockButton = Button(2 * app.tileSize, app.height - app.tileHalf, 150, 60, 'images/emptyButton.png', lambda: self.unlockAll(app))
+        self.buttons = [self.backButton, self.difficultyButton, self.FPSButton, self.screenSizeButton, self.unlockButton]
         self.backgroundImage = backgroundImages[random.randint(0, 3)]
 
     def draw(self, app):
@@ -80,6 +81,8 @@ class settingPage:
             drawLabel('Normal', app.width // 2, 11 * app.tileSize - 5, fill = 'white', font = 'Ithaca', size = 30)
         elif(app.width == 1600):
             drawLabel('Large', app.width // 2, 11 * app.tileSize - 5, fill = 'white', font = 'Ithaca', size = 30)
+
+        drawLabel('Unlock All', app.tileSize * 2, app.height - app.tileHalf - 5, fill = 'white', font = 'Ithaca', size = 30)
 
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -113,8 +116,9 @@ class settingPage:
             app.tileHalf = 40
             self.difficultyButton = Button(app.width // 2, 7 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeDifficulty(app))
             self.FPSButton = Button(app.width // 2, 9 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeFPS(app))
-            self.ScreenSizeButton = Button(app.width // 2, 11 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeScreenSize(app))
-            self.buttons = [self.backButton, self.difficultyButton, self.FPSButton, self.ScreenSizeButton]
+            self.screenSizeButton = Button(app.width // 2, 11 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeScreenSize(app))
+            self.unlockButton = Button(2 * app.tileSize, app.height - app.tileHalf, 150, 60, 'images/emptyButton.png', lambda: self.unlockAll(app))
+            self.buttons = [self.backButton, self.difficultyButton, self.FPSButton, self.screenSizeButton, self.unlockButton]
         else:
             app.width = 1280
             app.height = 768
@@ -122,9 +126,13 @@ class settingPage:
             app.tileHalf = 32
             self.difficultyButton = Button(app.width // 2, 7 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeDifficulty(app))
             self.FPSButton = Button(app.width // 2, 9 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeFPS(app))
-            self.ScreenSizeButton = Button(app.width // 2, 11 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeScreenSize(app))
-            self.buttons = [self.backButton, self.difficultyButton, self.FPSButton, self.ScreenSizeButton]
+            self.screenSizeButton = Button(app.width // 2, 11 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeScreenSize(app))
+            self.unlockButton = Button(2 * app.tileSize, app.height - app.tileHalf, 150, 60, 'images/emptyButton.png', lambda: self.unlockAll(app))
+            self.buttons = [self.backButton, self.difficultyButton, self.FPSButton, self.screenSizeButton, self.unlockButton]
 
+    def unlockAll(self, app):
+        app.levelComplete = [True, True, True, True, True]
+        app.towerLock = [False, False, False, False, False, False, False, False, False]
 
 class creditPage:
     def __init__(self, app):
@@ -181,8 +189,14 @@ class levelPage:
         self.level3 = Button(7 * app.tileSize + app.tileHalf, 7 * app.tileSize + app.tileHalf, app.tileSize, app.tileSize, 
                              self.flagImages[app.levelComplete[2]], lambda: self.toLevel(app, 3))
         self.level3.locked = not app.levelComplete[1]
+        self.level4 = Button(16 * app.tileSize + app.tileHalf, 6 * app.tileSize + app.tileHalf, app.tileSize, app.tileSize, 
+                             self.flagImages[app.levelComplete[3]], lambda: self.toLevel(app, 4))
+        self.level4.locked = not app.levelComplete[2]
+        self.level5 = Button(13 * app.tileSize + app.tileHalf, app.tileSize + app.tileHalf, app.tileSize, app.tileSize, 
+                             self.flagImages[app.levelComplete[4]], lambda: self.toLevel(app, 5))
+        self.level5.locked = not app.levelComplete[3]
         self.shopButton = Button(app.width - app.tileHalf, app.height - app.tileHalf, 50, 50, 'images/shopButton.png', lambda: self.toShop(app))
-        self.buttons = [self.level1, self.level2, self. level3, self.backButton, self.shopButton]
+        self.buttons = [self.level1, self.level2, self.level3, self.level4, self.level5, self.backButton, self.shopButton]
         self.map = copy.deepcopy(worldMap)
 
     def draw(self, app):
@@ -347,7 +361,7 @@ class Level:
                     self.enemies.pop(i)
                     self.enemyLoc.pop(i)
                     if(self.hp <= 0):
-                        app.currentScreen = settlePage(app, False, self.lv)
+                        app.currentScreen = settlePage(app, False, self.lv, None)
                 else:
                     i += 1
 
@@ -407,10 +421,10 @@ class Level:
                              towerButtonImages[0], lambda: self.buildTower(app, row, col, 0))
         self.tower3 = Button(col * app.tileSize + app.tileHalf, (row - 1) * app.tileSize + app.tileHalf, 50, 50, 
                              towerButtonImages[3], lambda: self.buildTower(app, row, col, 3))
-        self.tower3.locked = towerLock[3]
+        self.tower3.locked = app.towerLock[3]
         self.tower6 = Button((col + 1) * app.tileSize + app.tileHalf, row * app.tileSize + app.tileHalf, 50, 50, 
                              towerButtonImages[6], lambda: self.buildTower(app, row, col, 6))
-        self.tower6.locked = towerLock[6]
+        self.tower6.locked = app.towerLock[6]
         self.buildButtons = [self.tower0, self.tower3, self.tower6]
         self.buildCosts = [[towerStat[0][4], (col - 1) * app.tileSize + app.tileHalf, (row + 1) * app.tileSize],
                            [towerStat[3][4], col * app.tileSize + app.tileHalf, row * app.tileSize],
@@ -426,9 +440,9 @@ class Level:
         self.buildCosts = []
         if(type % 3 == 0):
             self.towerUpgrade1 = Button(x - app.tileSize, y, 50, 50, towerButtonImages[type + 1], lambda: self.buildTower(app, row, col, type + 1))
-            self.towerUpgrade1.locked = towerLock[type + 1]
+            self.towerUpgrade1.locked = app.towerLock[type + 1]
             self.towerUpgrade2 = Button(x + app.tileSize, y, 50, 50, towerButtonImages[type + 2], lambda: self.buildTower(app, row, col, type + 2))
-            self.towerUpgrade2.locked = towerLock[type + 2]
+            self.towerUpgrade2.locked = app.towerLock[type + 2]
             self.buildButtons.extend([self.towerUpgrade1, self.towerUpgrade2])
             self.buildCosts = [[towerStat[type + 1][4], (col - 1) * app.tileSize + app.tileHalf, (row + 1) * app.tileSize],
                                 [towerStat[type + 2][4], (col + 1) * app.tileSize + app.tileHalf, (row + 1) * app.tileSize]]
@@ -516,9 +530,14 @@ class settlePage:
         for button in self.buttons:
             button.draw()
 
-        drawLabel(f"{app.totalMoney - self.reward}(+{self.reward})", app.width - app.tileSize, app.tileHalf, 
-                  fill = 'white', size = 26, font = 'Ithaca', bold = True, align = 'right')
-        drawImage('images\goldCoin.png', app.width + app.tileHalf, app.tileHalf, align = 'center')
+        if(self.victory):
+            drawLabel(f"{app.totalMoney - self.reward}(+{self.reward})", app.width - app.tileSize, app.tileHalf, 
+                      fill = 'white', size = 26, font = 'Ithaca', bold = True, align = 'right')
+        else:
+            drawLabel(str(app.totalMoney), app.width - app.tileSize, app.tileHalf, 
+                      fill = 'white', size = 26, font = 'Ithaca', bold = True, align = 'right')
+            
+        drawImage('images\goldCoin.png', app.width - app.tileHalf, app.tileHalf, align = 'center')
 
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -542,14 +561,14 @@ class shopPage:
         self.buyTower3 = Button(8 * app.tileSize, 5 * app.tileSize + app.tileHalf, 50, 50, 'images/tower3Button.png', lambda: self.buy(app, 2))
         self.buyTower4 = Button(10 * app.tileSize, 9 * app.tileSize + app.tileHalf, 50, 50, 'images/tower4Button.png', lambda: self.buy(app, 3))
         self.buyTower5 = Button(10 * app.tileSize, 7 * app.tileSize + app.tileHalf, 50, 50, 'images/tower5Button.png', lambda: self.buy(app, 4))
-        self.buyTower5.locked = towerLock[3]
+        self.buyTower5.locked = app.towerLock[3]
         self.buyTower6 = Button(10 * app.tileSize, 5 * app.tileSize + app.tileHalf, 50, 50, 'images/tower6Button.png', lambda: self.buy(app, 5))
-        self.buyTower6.locked = towerLock[3]
+        self.buyTower6.locked = app.towerLock[3]
         self.buyTower7 = Button(12 * app.tileSize, 9 * app.tileSize + app.tileHalf, 50, 50, 'images/tower7Button.png', lambda: self.buy(app, 6))
         self.buyTower8 = Button(12 * app.tileSize, 7 * app.tileSize + app.tileHalf, 50, 50, 'images/tower8Button.png', lambda: self.buy(app, 7))
-        self.buyTower8.locked = towerLock[6]
+        self.buyTower8.locked = app.towerLock[6]
         self.buyTower9 = Button(12 * app.tileSize, 5 * app.tileSize + app.tileHalf, 50, 50, 'images/tower9Button.png', lambda: self.buy(app, 8))
-        self.buyTower9.locked = towerLock[6]
+        self.buyTower9.locked = app.towerLock[6]
         self.buttons = [self.backButton, self.buyTower3, self.buyTower4, self.buyTower5, self.buyTower6, self.buyTower7, self.buyTower8, self.buyTower9]
         self.backgroundImage = backgroundImages[random.randint(0, 3)]
 
@@ -567,7 +586,7 @@ class shopPage:
         index = 0
         for i in range(3):
             for j in range(2, -1, -1):
-                if(not towerLock[index]):
+                if(not app.towerLock[index]):
                     drawLabel("Owned", app.tileSize * (i * 2 + 8), app.tileSize * (j * 2 + 6), 
                               font = 'Ithaca', size = 20, align = 'center')
                     drawLabel("Owned", app.tileSize * (i * 2 + 8), app.tileSize * (j * 2 + 6), 
@@ -591,9 +610,9 @@ class shopPage:
         app.currentScreen = levelPage(app)
 
     def buy(self, app, type):
-        if(towerLock[type]):
+        if(app.towerLock[type]):
             if(app.totalMoney >= towerPrice[type]):
-                towerLock[type] = False
+                app.towerLock[type] = False
                 app.totalMoney -= towerPrice[type]
                 if(type == 3):
                     self.buyTower5.locked = False

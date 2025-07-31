@@ -28,8 +28,6 @@ towerButtonImages = ['images/tower1Button.png',
 
 explosionImages = ['images\explosion1.png', 'images\explosion2.png', 'images\explosion3.png', 'images\explosion4.png', 'images\explosion5.png']
 
-towerLock = [False, False, True, True, True, True, True, True, True]
-
 towerPrice = [0, 0, 80, 50, 120, 200, 50, 120, 200]
 
 class Tower:
@@ -42,6 +40,3 @@ class Tower:
     def draw(self, app):
         drawImage(self.stat[0], self.col * app.tileSize + app.tileHalf, self.row * app.tileSize + app.tileHalf, 
                   width = app.tileSize, height = app.tileSize, align = 'center')
-        
-    def attack(self, app, target):
-        pass

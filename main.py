@@ -13,6 +13,7 @@ def onAppStart(app):
     app.stepsPerSecond = 60
     app.hp = 20
     app.levelComplete = [False, False, False, False, False]
+    app.towerLock = [False, False, True, True, True, True, True, True, True]
     app.totalMoney = 0
     app.moneyRate = 90
 
