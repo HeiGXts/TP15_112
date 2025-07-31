@@ -4,15 +4,17 @@ from map import *
 #left, right, up, down, dead
 enemyImage = [
     ['images\enemyUnitL1.png', 'images\enemyUnitR1.png', 'images\enemyUnitU1.png', 'images\enemyUnitD1.png', 'images\enemyUnit1Dead.png'],
-    ['images\enemyUnitL1.png', 'images\enemyUnitR1.png', 'images\enemyUnitU1.png', 'images\enemyUnitD1.png', 'images\enemyUnit1Dead.png'],
+    ['images\enemyUnitL3.png', 'images\enemyUnitR3.png', 'images\enemyUnitU3.png', 'images\enemyUnitD3.png', 'images\enemyUnit3Dead.png'],
+    ['images\enemyUnitL3.png', 'images\enemyUnitR3.png', 'images\enemyUnitU3.png', 'images\enemyUnitD3.png', 'images\enemyUnit3Dead.png'],
     ['images\enemyUnitL3.png', 'images\enemyUnitR3.png', 'images\enemyUnitU3.png', 'images\enemyUnitD3.png', 'images\enemyUnit3Dead.png']
 ]
 
 #image, damage, hp, speed(pixel per 5 steps), worth, size
 enemyStat = [
-    [enemyImage[0], 1, 35, 4, 5, 0.5],
-    [enemyImage[1], 2, 40, 8, 20, 0.75],
-    [enemyImage[2], 5, 150, 2, 50, 1]
+    [enemyImage[0], 1, 40, 4, 5, 0.5],
+    [enemyImage[1], 2, 50, 8, 20, 0.75],
+    [enemyImage[2], 5, 500, 2, 50, 1],
+    [enemyImage[3], 10, 1500, 2, 150, 1.25]
 ]
 
 #Inspiration from:

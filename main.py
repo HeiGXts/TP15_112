@@ -1,6 +1,9 @@
 from cmu_graphics import *
 from screens import *
 
+#Font in use:
+# 'Ithaca', 'font\ithaca-font\Ithaca-LVB75.ttf'
+
 def onAppStart(app):
     app.width = 1280
     app.height = 768
@@ -10,7 +13,8 @@ def onAppStart(app):
     app.stepsPerSecond = 60
     app.hp = 20
     app.levelComplete = [False, False]
-    app.totalMoney = 0
+    app.totalMoney = 200
+    app.moneyRate = 90
 
 def redrawAll(app):
     app.currentScreen.draw(app)
@@ -25,7 +29,5 @@ def onKeyPress(app, key):
 def onStep(app):
     if(isinstance(app.currentScreen, Level)):
         app.currentScreen.onStep(app)
-
-# 'ithaca', 'font\ithaca-font\Ithaca-LVB75.ttf'
 
 runApp()

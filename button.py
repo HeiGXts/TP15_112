@@ -12,9 +12,10 @@ class Button:
 
     def draw(self):
         drawImage(self.image, self.x, self.y, width = self.width, height = self.height, align = 'center')
+        if(self.locked):
+            drawImage('images\lock.png', self.x, self.y, width = self.width, height = self.height, align = 'center')
 
     def mousePress(self, mouseX, mouseY):
         if(self.x - self.width // 2 <= mouseX <= self.x + self.width // 2 and 
-           self.y - self.height // 2 <= mouseY <= self.y + self.height // 2 and not self.locked):
+           self.y - self.height // 2 <= mouseY <= self.y + self.height // 2):
             self.action()
-            return True
