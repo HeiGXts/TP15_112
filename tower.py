@@ -23,7 +23,7 @@ towerButtonImages = ['images/tower1Button.png',
                      'images/tower8Button.png',
                      'images/tower9Button.png']
 
-#Icon Inspiration from:
+#Icon Art Inspiration from:
 #https://jimhatama.itch.io/world-wars-weapons-pack
 
 explosionImages = ['images\explosion1.png', 'images\explosion2.png', 'images\explosion3.png', 'images\explosion4.png', 'images\explosion5.png']

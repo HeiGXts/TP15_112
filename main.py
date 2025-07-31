@@ -1,8 +1,13 @@
 from cmu_graphics import *
 from screens import *
 
+#All Coding and Art in this project is DONE BY MYSELF
+#No use of any AI, tutorial, or any code copied else where
+#Except for the font and background images at the title screen, which I found online
+
 #Font in use:
 # 'Ithaca', 'font\ithaca-font\Ithaca-LVB75.ttf'
+#https://fontesk.com/ithaca-font/
 
 def onAppStart(app):
     app.width = 1280

@@ -17,7 +17,7 @@ enemyStat = [
     [enemyImage[3], 10, 1500, 2, 150, 1.25]
 ]
 
-#Inspiration from:
+#Art Inspiration from:
 #https://jimhatama.itch.io/german-ww2-pixel-tanks
 
 class Enemy:
