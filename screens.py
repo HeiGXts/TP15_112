@@ -13,7 +13,7 @@ import drawMap
 #https://www.shutterstock.com/image-vector/pixel-art-game-level-background-8-2303999851
 #https://www.shutterstock.com/image-vector/pixel-art-game-level-background-space-2553891639
 
-backgroundImages = ['images\\background1.png', 'images\\background2.png', 'images\\background3.png', 'images\\background4.png']
+backgroundImages = ['images/background1.png', 'images/background2.png', 'images/background3.png', 'images/background4.png']
 
 class homePage:
     def __init__(self, app):
@@ -28,7 +28,7 @@ class homePage:
         drawImage(self.backgroundImage, 0, 0, width = app.width, height = app.height)
         for button in self.buttons:
             button.draw()
-        drawImage('images\\title.png', app.width // 2, app.height * 0.35, width = 500, height = 250, align = 'center')
+        drawImage('images/title.png', app.width // 2, app.height * 0.35, width = 500, height = 250, align = 'center')
 
     def toLevel(self):
         app.currentScreen = levelPage(app)
@@ -46,15 +46,40 @@ class homePage:
 
 class settingPage:
     def __init__(self, app):
-        self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, r'images\backButton.png', lambda: self.back(app))
-        self.buttons = [self.backButton]
+        self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, 'images/backButton.png', lambda: self.back(app))
+        self.difficultyButton = Button(app.width // 2, 7 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeDifficulty(app))
+        self.FPSButton = Button(app.width // 2, 9 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeFPS(app))
+        self.ScreenSizeButton = Button(app.width // 2, 11 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeScreenSize(app))
+        self.buttons = [self.backButton, self.difficultyButton, self.FPSButton, self.ScreenSizeButton]
         self.backgroundImage = backgroundImages[random.randint(0, 3)]
 
     def draw(self, app):
         drawImage(self.backgroundImage, 0, 0, width = app.width, height = app.height)
         drawLabel('Setting', app.width // 2, app.tileSize, fill = rgb(210, 175, 90), size = 60, font = 'Ithaca', bold = True, align = 'center')
+
+        drawLabel('Controls:', app.width // 2, 3 * app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40)
+        drawLabel("Press 'r' to restart current level", app.width // 2, 4 * app.tileSize, fill = 'white', font = 'Ithaca', size = 30)
+        drawLabel("Press 'space' to pause/unpause current level", app.width // 2, 5 * app.tileSize, fill = 'white', font = 'Ithaca', size = 30)
+
         for button in self.buttons:
             button.draw()
+
+        drawLabel('Difficulty:', app.width // 2, 6 * app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40)
+        if(app.hp == 20):
+            drawLabel('Easy', app.width // 2, 7 * app.tileSize - 5, fill = 'white', font = 'Ithaca', size = 30)
+        elif(app.hp == 15):
+            drawLabel('Normal', app.width // 2, 7 * app.tileSize - 5, fill = 'white', font = 'Ithaca', size = 30)
+        else:
+            drawLabel('Hard', app.width // 2, 7 * app.tileSize - 5, fill = 'white', font = 'Ithaca', size = 30)
+
+        drawLabel('Default FPS:', app.width // 2, 8 * app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40)
+        drawLabel(str(app.stepsPerSecond), app.width // 2, 9 * app.tileSize - 5, fill = 'white', font = 'Ithaca', size = 30)
+
+        drawLabel('Screen Size:', app.width // 2, 10 * app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40)
+        if(app.width == 1280):
+            drawLabel('Normal', app.width // 2, 11 * app.tileSize - 5, fill = 'white', font = 'Ithaca', size = 30)
+        elif(app.width == 1600):
+            drawLabel('Large', app.width // 2, 11 * app.tileSize - 5, fill = 'white', font = 'Ithaca', size = 30)
 
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -62,6 +87,43 @@ class settingPage:
 
     def back(self, app):
         app.currentScreen = homePage(app)
+
+    def changeDifficulty(self, app):
+        if(app.hp == 20):
+            app.hp = 15
+            app.moneyRate = 120
+        elif(app.hp == 15):
+            app.hp = 10
+            app.moneyRate = 150
+        else:
+            app.hp = 20
+            app.moneyRate = 90
+
+    def changeFPS(self, app):
+        if(app.stepsPerSecond == 60):
+            app.stepsPerSecond = 30
+        else:
+            app.stepsPerSecond = 60
+
+    def changeScreenSize(self, app):
+        if(app.width == 1280):
+            app.width = 1600
+            app.height = 960
+            app.tileSize = 80
+            app.tileHalf = 40
+            self.difficultyButton = Button(app.width // 2, 7 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeDifficulty(app))
+            self.FPSButton = Button(app.width // 2, 9 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeFPS(app))
+            self.ScreenSizeButton = Button(app.width // 2, 11 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeScreenSize(app))
+            self.buttons = [self.backButton, self.difficultyButton, self.FPSButton, self.ScreenSizeButton]
+        else:
+            app.width = 1280
+            app.height = 768
+            app.tileSize = 64
+            app.tileHalf = 32
+            self.difficultyButton = Button(app.width // 2, 7 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeDifficulty(app))
+            self.FPSButton = Button(app.width // 2, 9 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeFPS(app))
+            self.ScreenSizeButton = Button(app.width // 2, 11 * app.tileSize, 150, 60, 'images/emptyButton.png', lambda: self.changeScreenSize(app))
+            self.buttons = [self.backButton, self.difficultyButton, self.FPSButton, self.ScreenSizeButton]
 
 
 class creditPage:
@@ -72,7 +134,29 @@ class creditPage:
 
     def draw(self, app):
         drawImage(self.backgroundImage, 0, 0, width = app.width, height = app.height)
-        drawLabel('Credit', app.width // 2, app.tileSize, fill = rgb(210, 175, 90), size = 60, font = 'Ithaca', bold = True, align = 'center')
+        drawLabel('Credit', app.width // 2, app.tileSize, fill = rgb(210, 175, 90), size = 60, font = 'Ithaca', bold = True)
+        drawLabel('Programming:', 2 * app.tileSize, 3 * app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40, align = 'left')
+        drawLabel('Gavin Yin', 5 * app.tileSize, 3 * app.tileSize, fill = 'white', font = 'Ithaca', size = 38, align = 'left')
+        drawLabel('Art:', 12 * app.tileSize, 3 * app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40, align = 'left')
+        drawLabel('Gavin Yin', 15 * app.tileSize, 3 * app.tileSize, fill = 'white', font = 'Ithaca', size = 38, align = 'left')
+        drawLabel('Language:', 2 * app.tileSize, 4 * app.tileSize + app.tileHalf, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40, align = 'left')
+        drawLabel('Python v3.12.10', 5 * app.tileSize, 4 * app.tileSize + app.tileHalf, fill = 'white', font = 'Ithaca', size = 38, align = 'left')
+        drawLabel('Library:', 12 * app.tileSize, 4 * app.tileSize + app.tileHalf, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40, align = 'left')
+        drawLabel('CMU Graphics v1.1.42', 15 * app.tileSize, 4 * app.tileSize + app.tileHalf, fill = 'white', font = 'Ithaca', size = 38, align = 'left')
+
+        drawLabel('Background Images:', app.width // 2, 6 * app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40)
+        drawLabel('https://stock.adobe.com/search?k=pixel+art+background&asset_id=726960402', 
+                  app.width // 2, 6 * app.tileSize + app.tileHalf, fill = 'white', font = 'Ithaca', size = 30)
+        drawLabel('https://stock.adobe.com/search?k=pixel+art+background&asset_id=760560007', 
+                  app.width // 2, 7 * app.tileSize, fill = 'white', font = 'Ithaca', size = 30)
+        drawLabel('https://www.shutterstock.com/image-vector/pixel-art-game-level-background-8-2303999851', 
+                  app.width // 2, 7 * app.tileSize + app.tileHalf, fill = 'white', font = 'Ithaca', size = 30)
+        drawLabel('https://www.shutterstock.com/image-vector/pixel-art-game-level-background-space-2553891639', 
+                  app.width // 2, 8 * app.tileSize, fill = 'white', font = 'Ithaca', size = 30)
+        
+        drawLabel('Font:', app.width // 2, 9 * app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 40)
+        drawLabel('Ithaca', app.width // 2, 9 * app.tileSize + app.tileHalf, fill = 'white', font = 'Ithaca', size = 35)
+
         for button in self.buttons:
             button.draw()
 
@@ -94,8 +178,11 @@ class levelPage:
         self.level2 = Button(3 * app.tileSize + app.tileHalf, 4 * app.tileSize + app.tileHalf, app.tileSize, app.tileSize, 
                              self.flagImages[app.levelComplete[1]], lambda: self.toLevel(app, 2))
         self.level2.locked = not app.levelComplete[0]
+        self.level3 = Button(7 * app.tileSize + app.tileHalf, 7 * app.tileSize + app.tileHalf, app.tileSize, app.tileSize, 
+                             self.flagImages[app.levelComplete[2]], lambda: self.toLevel(app, 3))
+        self.level3.locked = not app.levelComplete[1]
         self.shopButton = Button(app.width - app.tileHalf, app.height - app.tileHalf, 50, 50, 'images/shopButton.png', lambda: self.toShop(app))
-        self.buttons = [self.level1, self.level2, self.backButton, self.shopButton]
+        self.buttons = [self.level1, self.level2, self. level3, self.backButton, self.shopButton]
         self.map = copy.deepcopy(worldMap)
 
     def draw(self, app):
@@ -104,6 +191,7 @@ class levelPage:
         for button in self.buttons:
             button.draw()
 
+        drawLabel('World Map', app.width // 2, app.tileSize, fill = rgb(210, 175, 90), size = 60, font = 'Ithaca', bold = True, align = 'center')
         drawLabel(str(app.totalMoney), app.width - app.tileSize, app.tileHalf, fill = 'white', size = 26, font = 'Ithaca', bold = True, align = 'right')
         drawImage('images\goldCoin.png', app.width - app.tileHalf, app.tileHalf, align = 'center')
 
@@ -144,7 +232,7 @@ class Level:
         self.hp = app.hp
         self.rangeStat = [False]
         self.waves = copy.deepcopy(enemyWave[lv - 1])
-        self.thisWave = [0, 0, 0]
+        self.thisWave = [0, 0, 0, 0]
         self.enemyLoc = []
         self.count = 0
         self.enemies = []
@@ -183,10 +271,16 @@ class Level:
             for button in self.buildButtons:
                 button.draw()
             if(self.buildCosts != []):
-                drawLabel(self.buildCosts[0][0], self.buildCosts[0][1], self.buildCosts[0][2], fill = rgb(210, 175, 90), size = 16, font = 'Ithaca', align = 'center')
-                drawLabel(self.buildCosts[1][0], self.buildCosts[1][1], self.buildCosts[1][2], fill = rgb(210, 175, 90), size = 16, font = 'Ithaca', align = 'center')
+                drawLabel(self.buildCosts[0][0], self.buildCosts[0][1], self.buildCosts[0][2], size = 20, font = 'Ithaca', align = 'center')
+                drawLabel(self.buildCosts[0][0], self.buildCosts[0][1], self.buildCosts[0][2], 
+                          fill = rgb(210, 175, 90), size = 16, font = 'Ithaca', align = 'center')
+                drawLabel(self.buildCosts[1][0], self.buildCosts[1][1], self.buildCosts[1][2], size = 20, font = 'Ithaca', align = 'center')
+                drawLabel(self.buildCosts[1][0], self.buildCosts[1][1], self.buildCosts[1][2], 
+                          fill = rgb(210, 175, 90), size = 16, font = 'Ithaca', align = 'center')
                 if(len(self.buildCosts) > 2):
-                    drawLabel(self.buildCosts[2][0], self.buildCosts[2][1], self.buildCosts[2][2], fill = rgb(210, 175, 90), size = 16, font = 'Ithaca', align = 'center')
+                    drawLabel(self.buildCosts[2][0], self.buildCosts[2][1], self.buildCosts[2][2], size = 20, font = 'Ithaca', align = 'center')
+                    drawLabel(self.buildCosts[2][0], self.buildCosts[2][1], self.buildCosts[2][2], 
+                              fill = rgb(210, 175, 90), size = 16, font = 'Ithaca', align = 'center')
 
         drawLabel(str(self.m), app.width - app.tileSize, app.tileHalf, fill = 'white', size = 26, font = 'Ithaca', bold = True, align = 'right')
         drawImage('images\silverCoin.png', app.width - app.tileHalf, app.tileHalf, align = 'center')
@@ -227,7 +321,7 @@ class Level:
     def onStep(self, app):
         if(self.run):
             self.count = (self.count + 1) % (app.stepsPerSecond * 6)
-            if(self.thisWave != [0, 0, 0]):
+            if(self.thisWave != [0, 0, 0, 0]):
                 if(self.count % enemySpawnRate[self.lv - 1][len(enemyWave[self.lv - 1]) - len(self.waves) - 1] == 0):
                     if(self.thisWave[0] > 0):
                         self.enemies.append(Enemy(app, self.map, start[self.lv], 0))
@@ -235,9 +329,12 @@ class Level:
                     elif(self.thisWave[1] > 0):
                         self.enemies.append(Enemy(app, self.map, start[self.lv], 1))
                         self.thisWave[1] -= 1
-                    else:
+                    elif(self.thisWave[2] > 0):
                         self.enemies.append(Enemy(app, self.map, start[self.lv], 2))
                         self.thisWave[2] -= 1
+                    else:
+                        self.enemies.append(Enemy(app, self.map, start[self.lv], 3))
+                        self.thisWave[3] -= 1
             
             i = 0
             self.waveComplete = True
@@ -358,10 +455,11 @@ class Level:
             if(self.waves == []):
                 if(app.levelComplete[self.lv - 1]):
                     app.totalMoney += reward[self.lv - 1][1]
+                    app.currentScreen = settlePage(app, True, self.lv, reward[self.lv - 1][1])
                 else:
                     app.levelComplete[self.lv - 1] = True
                     app.totalMoney += reward[self.lv - 1][0]
-                app.currentScreen = settlePage(app, True, self.lv)
+                    app.currentScreen = settlePage(app, True, self.lv, reward[self.lv - 1][0])
             else:
                 self.enemies = []
                 self.thisWave = self.waves.pop(0)
@@ -388,12 +486,13 @@ class Level:
             app.stepsPerSecond = 60
 
 class settlePage:
-    def __init__(self, app, victory, lv):
+    def __init__(self, app, victory, lv, reward):
         self.lv = lv
         self.victory = victory
+        self.reward = reward
         self.backButton = Button(app.tileHalf, app.tileHalf, 50, 50, 'images/backButton.png', lambda: self.back(app))
         if(victory):
-            self.nextLevelButton = Button(10 * app.tileSize + app.tileHalf, 7 * app.tileSize + app.tileHalf, 50, 50, 
+            self.nextLevelButton = Button(11 * app.tileSize + app.tileHalf, 7 * app.tileSize + app.tileHalf, 50, 50, 
                                           'images/nextWaveButton.png', lambda: self.nextLevel(app))
             self.restartButton = Button(8 * app.tileSize + app.tileHalf, 7 * app.tileSize + app.tileHalf, 50, 50, 
                                         'images/restartButton.png', lambda: self.restart(app))
@@ -405,13 +504,21 @@ class settlePage:
     def draw(self, app):
         if(self.victory):
             drawRect(0, 0, app.width, app.height, fill = 'lightGreen')
+            drawLabel('Level Complete', app.width // 2, app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 60, bold = True)
+            drawLabel('Reward:', app.width // 2, app.tileSize * 4 + app.tileHalf, fill = rgb(210, 175, 90), font = 'Ithaca', size = 30)
+            drawLabel('+' + str(self.reward), app.width // 2 - app.tileHalf, app.tileSize * 5 + app.tileHalf, 
+                      fill = 'white', font = 'Ithaca', size = 26, align = 'right')
+            drawImage('images\goldCoin.png', app.width // 2 + app.tileHalf, app.tileSize * 5 + app.tileHalf, width = 48, height = 48, align = 'center')
         else:
             drawRect(0, 0, app.width, app.height, fill = 'pink')
-
-        drawLabel()
+            drawLabel('Level Failed', app.width // 2, app.tileSize, fill = rgb(210, 175, 90), font = 'Ithaca', size = 60, bold = True)
 
         for button in self.buttons:
             button.draw()
+
+        drawLabel(f"{app.totalMoney - self.reward}(+{self.reward})", app.width - app.tileSize, app.tileHalf, 
+                  fill = 'white', size = 26, font = 'Ithaca', bold = True, align = 'right')
+        drawImage('images\goldCoin.png', app.width + app.tileHalf, app.tileHalf, align = 'center')
 
     def mousePress(self, app, mouseX, mouseY):
         for button in self.buttons:
@@ -462,8 +569,12 @@ class shopPage:
             for j in range(2, -1, -1):
                 if(not towerLock[index]):
                     drawLabel("Owned", app.tileSize * (i * 2 + 8), app.tileSize * (j * 2 + 6), 
+                              font = 'Ithaca', size = 20, align = 'center')
+                    drawLabel("Owned", app.tileSize * (i * 2 + 8), app.tileSize * (j * 2 + 6), 
                               fill = rgb(210, 175, 90), font = 'Ithaca', size = 16, align = 'center')
                 else:
+                    drawLabel(str(towerPrice[index]), app.tileSize * (i * 2 + 8), app.tileSize * (j * 2 + 6), 
+                              font = 'Ithaca', size = 20, align = 'center')
                     drawLabel(str(towerPrice[index]), app.tileSize * (i * 2 + 8), app.tileSize * (j * 2 + 6), 
                               fill = rgb(210, 175, 90), font = 'Ithaca', size = 16, align = 'center')
                 index += 1
